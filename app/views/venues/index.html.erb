@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="span4 offset4 center">
+    <h4>Search for venues on foursquare</h4>
+    <%= render 'venues/search' %>
+  </div>
+</div>
+
+<% unless current_user %>
+  <div class="row">
+    <div class="span4 offset4 center">(<%= link_to "sign in with foursquare", "/auth/foursquare" %> to favourite venues)</div>
+  </div>
+<% end %>
+
+<div id="search-results"></div>

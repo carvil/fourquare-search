@@ -1,0 +1,10 @@
+<div id="favourites-list">
+  <% if @venues.empty? %>
+    <p class="center">No favourites yet</p>
+  <% else %>
+    <%= render 'venues/headline' %>
+    <%= render @venues %>
+    <br/>
+    <div class="center"><%= link_to "export (csv)", user_favourites_path(current_user, format: :csv) %></div>
+  <% end %>
+</div>

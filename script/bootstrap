@@ -1,0 +1,103 @@
+#!/bin/bash
+#
+# setup
+#
+# Sets your system up for foursquare-search.
+
+set -e
+
+echo ""
+echo -e "\033[32m  Foursquare Search."
+echo " Search for venues on foursquare..."
+echo ""
+echo -e "\033[0m"
+
+### RUBY -V > 1.9.2
+
+echo "Checking for ruby"
+if test ! $(rbenv version-name | grep -o '1\.9\.[2-3]-[a-z][0-9][0-9][0-9]')
+then
+  echo -e "\033[31m  x You need to install ruby 1.9.2 or greater (ideally 1.9.3):"
+  echo -e "    rbenv install 1.9.3-p327"
+  echo -e "\033[0m"
+  exit
+else
+  echo -e "\033[32m  + ruby $(rbenv version) found"
+fi
+echo -e "\033[0m"
+
+### BUNDLER
+
+echo "Checking for bundler"
+if test ! $(which bundle)
+then
+  echo -e "\033[31m  x You need to install Bundler:"
+  echo -e "    gem install bundler"
+  echo -e "    rbenv rehash"
+  echo -e "\033[0m"
+  exit
+else
+  echo -e "\033[32m  + bundler found"
+fi
+echo -e "\033[0m"
+
+### REDIS
+
+echo "Checking for redis"
+if test ! $(which redis-server)
+then
+  echo -e "\033[31m  x You need to install redis:"
+  echo -e "    brew install redis"
+  echo -e "\033[0m"
+  exit
+else
+  echo -e "\033[32m  + redis found"
+  echo -e "\033[32m  Start redis by running $(which redis-server)"
+fi
+echo -e "\033[0m"
+
+### PHANTOMJS
+
+echo "Checking for phantomjs"
+if test ! $(which phantomjs)
+then
+  echo -e "\033[31m  x You need to install phantomjs:"
+  echo -e "   brew install phantomjs"
+  echo -e "\033[0m"
+  exit
+else
+  echo -e "\033[32m  + phantomjs $(phantomjs -v) found"
+fi
+echo -e "\033[0m"
+
+### INSTALL GEMS
+
+echo "Installing gems..."
+bundle install --quiet
+echo -e "\033[32m  + Gems installed\033[0m"
+echo ""
+
+### CREATE DB
+echo "Creating database"
+bundle exec rake db:create
+echo -e "\033[32m  + Database created\033[0m"
+echo ""
+
+### MIGRATE DB
+echo "Migrating database"
+bundle exec rake db:migrate
+echo -e "\033[32m  + Database migrated\033[0m"
+echo ""
+
+### RUNNING SPECS
+
+echo "Running specs..."
+bundle exec rake test RAILS_ENV=test
+echo -e "\033[32m  + Finished running specs\033[0m"
+
+### DONE
+echo -e "\033[32m Finished bootstrapping the repo."
+echo "  Add the Foursquare API detai ls in lib/foursquare_proxy.rb and"
+echo "  then run 'bundle exec rails s' to start the server!"
+echo "  On your browser, navigate to 'http://localhost:3000'"
+echo -e "\033[0m"
